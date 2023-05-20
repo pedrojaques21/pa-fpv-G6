@@ -13,28 +13,44 @@
     <title>PA-PFV-G6</title>
 
     <style>
-      body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            height: 100vh;
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
 
-      #gl-canvas {
-          border: 2px solid black;
-      }
+    #gl-canvas {
+      border: 2px solid black;
+      position: relative;
+      z-index: 1;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      margin-top: 20px;
+    }
     </style>
   </head>
 
   <body>
+    <canvas id="gl-canvas" width="800" height="600">
+
+      Sorry, but your browser does not support HTML5's canvas element.
+
+    </canvas>
+
+    <br>
+
     <div class="container mt-3">
       <form action="">
         <label>Type:</label>
         <select class="form-select" id="lighttype" name="lighttype">
-          <option value="sun">Sun</option>
+          <option value="sun">Sun</option><!--Alabama: tudo em inglês por favor-->
           <option value="led">LED</option>
           <option value="">3</option>
           <option value="">4</option>
