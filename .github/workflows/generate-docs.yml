@@ -22,7 +22,7 @@ jobs:
         run: npm ci
 
       - name: Generate JSDoc
-        run: npx jsdoc -c jsdoc.config.json
+        run: jsdoc ../src/js/app.js
 
       - name: Archive JSDoc as artifact
         uses: actions/upload-artifact@v2

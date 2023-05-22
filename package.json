@@ -14,7 +14,5 @@
     "node.js": "^0.0.1-security",
     "three": "^0.152.2",    
     "parcel": "^2.8.3"
-  },
-  "devDependencies": {
   }
 }
