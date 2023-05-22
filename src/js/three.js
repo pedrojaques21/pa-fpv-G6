@@ -34,27 +34,50 @@ for (let i = 0; i < objectsCount; i++) {
 
   if (randomShape === 'cube') {
     const cubeSize = Math.random() * 0.4 + 0.1;
-    geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-    material = new THREE.MeshStandardMaterial({
-      color: getRandomColor(),
-      
-    });
-    console.log('cube');
+    geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize, 1, 1, 1);
+    const positionAttribute = geometry.getAttribute('position');
+
+    const colors = [];
+    const color = new THREE.Color();
+
+    for (let i = 0; i < positionAttribute.count; i += 4) {
+      color.set(getRandomColor());
+
+      colors.push(color.r, color.g, color.b);
+      colors.push(color.r, color.g, color.b);
+      colors.push(color.r, color.g, color.b);
+      colors.push(color.r, color.g, color.b);
+      colors.push(color.r, color.g, color.b);
+      colors.push(color.r, color.g, color.b);
+
+    }
+    material = new THREE.MeshStandardMaterial({ vertexColors: true });
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   } else if (randomShape === 'pyramid') {
     const pyramidSize = Math.random() * 0.4 + 0.1;
     geometry = new THREE.TetrahedronBufferGeometry(pyramidSize, 0); // radius and detail
-    material = new THREE.MeshStandardMaterial({
-      color: getRandomColor(),
-    });
-    console.log('pyramid');
+    const positionAttribute = geometry.getAttribute('position'); //->12 vertices / 4 faces = 3
+    const colors = [];
+    const color = new THREE.Color();
+    console.log('vertices: ' + positionAttribute.count);
+    for (let i = 0; i < positionAttribute.count; i += 3) {
+
+      color.set(getRandomColor());
+
+      colors.push(color.r, color.g, color.b);
+      colors.push(color.r, color.g, color.b);
+      colors.push(color.r, color.g, color.b);
+      colors.push(color.r, color.g, color.b);
+
+    }
+    material = new THREE.MeshStandardMaterial({ vertexColors: true });
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   }
 
   const mesh = new THREE.Mesh(geometry, material);
-  console.log('MESH: ' + mesh);
   mesh.position.set(randomX, randomY, randomZ);
   scene.add(mesh);
   meshes.push(mesh);
-  console.log('MESH: ' + mesh);
 }
 
 const pointLight = new THREE.PointLight(0xffffff);
@@ -68,6 +91,8 @@ const gridHelper = new THREE.GridHelper(200, 50);
 //scene.add(lightHelper, gridHelper);
 
 const controls = new OrbitControls(camera, renderer.domElement);
+
+
 
 function getRandomColor() {
   return Math.random() * 0xffffff;
