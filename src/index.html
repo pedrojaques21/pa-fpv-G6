@@ -49,36 +49,36 @@
     <div class="container">
       <form action="">
         <label>Type:</label>
-        <select class="form-select" id="lighttype" name="lighttype">
-          <option value="sun">Sun</option><!--Alabama: tudo em inglês por favor-->
-          <option value="led">LED</option>
-          <option value="">3</option>
-          <option value="">4</option>
+        <select class="form-select" id="lightTypeSelect" name="lightTypeSelect" onchange="disable('lightTypeSelect')">
+          <option value="ambient">Ambient</option>
+          <option value="point">Point</option>
+          <option value="directional">Directional</option>
+          <option value="spot">Spot</option>
         </select>
         <br>
         <label>Direction:</label>
         <div class="row">
           <div class="col">
-            <input type="text" class="form-control" id="x" placeholder="X" name="x">
+            <input type="number" class="form-control" id="lightPosXInput" placeholder="X" min="-10" max="10" step="0.1">
           </div>
           <div class="col">
-            <input type="text" class="form-control" id="y" placeholder="Y" name="y">
+            <input type="number" class="form-control" id="lightPosYInput" placeholder="Y" min="-10" max="10" step="0.1">
           </div>
           <div class="col">
-            <input type="text" class="form-control" id="z" placeholder="Z" name="z">
+            <input type="number" class="form-control" id="lightPosZInput" placeholder="Z" min="-10" max="10" step="0.1">
           </div>
         </div>
         <br>
         <label for="direction">Intensity:</label>
         <div class="row">
           <div class="col">
-            <input type="text" class="form-control" id="r" placeholder="R" name="r">
+            <input type="number" id="colorRInput" class="form-control" placeholder="R" min="0" max="255" />
           </div>
           <div class="col">
-            <input type="text" class="form-control" id="g" placeholder="G" name="g">
+            <input type="number" id="colorGInput" class="form-control" placeholder="G" min="0" max="255" />
           </div>
           <div class="col">
-            <input type="text" class="form-control" id="b" placeholder="B" name="b">
+            <input type="number" id="colorBInput" class="form-control" placeholder="B" min="0" max="255" />
           </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Add Light</button>
@@ -86,5 +86,6 @@
     </div>
     <br>
     <script src="js/app.js" type="module"></script>
+    <script src="js/scripts.js"></script>
   </body>
 </html>
