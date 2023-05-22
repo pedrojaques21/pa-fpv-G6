@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 
+/**
+ * Base setup for the scene and camera  - STARTS HERE -
+ */
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
@@ -10,6 +13,10 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
+/**
+ * Base setup for the scene and camera  - ENDS HERE -
+ */
+
 
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector('#gl-canvas'),
