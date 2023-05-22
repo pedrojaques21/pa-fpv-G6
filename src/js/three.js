@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 
 const scene = new THREE.Scene();
 
@@ -16,7 +17,57 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(800, 600);
-camera.position.setZ(20);
+
+
+camera.position.y = 0;
+camera.position.z = 5;
+
+const startButton = document.getElementById('startButton');
+startButton.addEventListener(
+    'click',
+    function () {
+        controls.lock()
+    },
+    false
+)
+
+
+const controls = new PointerLockControls(camera,renderer.domElement)
+const clock = new THREE.Clock();
+
+const keyBoard = [];
+addEventListener('keydown',(e) =>{
+  keyBoard[e.key] = true;
+});
+
+addEventListener('keyup',(e) =>{
+  keyBoard[e.key] = false;
+});
+
+function processKeyBoard(delta){
+  let speed = 5;
+  let actualSpeed = speed * delta;
+  if(keyBoard['w']){
+    controls.moveForward(actualSpeed);
+  }
+  if(keyBoard['s']){
+    controls.moveForward(-actualSpeed);
+  }
+  if(keyBoard['a']){
+    controls.moveRight(-actualSpeed);
+  }
+  if(keyBoard['d']){
+    controls.moveRight(actualSpeed);
+  }
+  if(keyBoard[' ']){
+    controls.getObject().position.y += actualSpeed;
+  }
+  if(keyBoard['q']){
+    controls.getObject().position.y -= actualSpeed;
+  }
+}
+
+
 
 const objectsCount = Math.floor(Math.random() * 26) + 5;
 console.log(objectsCount);
@@ -88,10 +139,7 @@ scene.add(pointLight, ambientLight);
 
 const lightHelper = new THREE.PointLightHelper(pointLight);
 const gridHelper = new THREE.GridHelper(200, 50);
-//scene.add(lightHelper, gridHelper);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-
+scene.add(lightHelper, gridHelper);
 
 
 function getRandomColor() {
@@ -122,8 +170,8 @@ function animate() {
   for (const animateFunction of animateFunctions) {
     animateFunction();
   }
-
-  controls.update();
+  let delta = clock.getDelta();
+  processKeyBoard(delta);
 
   renderer.render(scene, camera);
 }
