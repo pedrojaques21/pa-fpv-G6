@@ -1,0 +1,31 @@
+name: Generate JSDoc
+
+on:
+  push:
+    branches:
+      - dev/Jaques
+
+jobs:
+  generate-jsdoc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate JSDoc
+        run: npx jsdoc -c jsdoc.config.json
+
+      - name: Archive JSDoc as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: jsdoc
+          path: ./out
