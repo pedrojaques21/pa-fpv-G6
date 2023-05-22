@@ -18,7 +18,6 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(800, 600);
 
-
 camera.position.y = 0;
 camera.position.z = 5;
 
@@ -31,13 +30,13 @@ startButton.addEventListener(
     false
 )
 
-
 const controls = new PointerLockControls(camera,renderer.domElement)
 const clock = new THREE.Clock();
 
 const keyBoard = [];
 addEventListener('keydown',(e) =>{
   keyBoard[e.key] = true;
+  console.log(keyBoard);
 });
 
 addEventListener('keyup',(e) =>{
@@ -59,15 +58,13 @@ function processKeyBoard(delta){
   if(keyBoard['d']){
     controls.moveRight(actualSpeed);
   }
-  if(keyBoard[' ']){
+  if(keyBoard['e']){
     controls.getObject().position.y += actualSpeed;
   }
   if(keyBoard['q']){
     controls.getObject().position.y -= actualSpeed;
   }
 }
-
-
 
 const objectsCount = Math.floor(Math.random() * 26) + 5;
 console.log(objectsCount);

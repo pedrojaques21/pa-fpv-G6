@@ -12,60 +12,41 @@
     <title>PA-PFV-G6</title>
 
     <style>
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #gl-canvas {
-      border: 2px solid black;
-      position: relative;
-      z-index: 1;
-    }
-
-    .container {
-      position: relative;
-      z-index: 2;
-      margin-top: 20px;
-    }
-    #controls {
-      position: absolute;
-      left: 50px;
-      top: 10px;
-    }
+      #gl-canvas {
+        border: 2px solid black;
+      }
     </style>
   </head>
 
   <body>
-    <canvas id="gl-canvas" width="800" height="600">
+    <br>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <canvas id="gl-canvas" width="800" height="600">
 
-      Sorry, but your browser does not support HTML5's canvas element.
-
-    </canvas>
-    <div id="menuPanel">
-      <button id="startButton" class="btn btn-primary mt-3">Start</button>
+            Sorry, but your browser does not support HTML5's canvas element.
+      
+          </canvas>
+        </div>
+        <div class="col">
+            <h2>Controls</h2>
+            <p><strong>Press the Start button to focus canvas</strong></p>
+            <p><strong>Press ESC to leave</strong></p>
+            <p><strong>W:</strong> Move Forward</p>
+            <p><strong>S:</strong> Move Backwards</p>
+            <p><strong>A:</strong> Move Left</p>
+            <p><strong>D:</strong> Move Right</p>
+            <p><strong>E:</strong> Move Up</p>
+            <p><strong>Q:</strong> Move Down</p>
+            <button id="startButton" class="btn btn-primary mt-3">Start</button>
+        </div>
+      </div>
     </div>
 
-    <div id="controls" class="container mt-3">
-      <h2>Controls</h2>
-      <p><strong>Press the Start button to start</strong></p>
-      <p><strong>Press ESC to leave</strong></p>
-      <p><strong>W:</strong> Move Forward</p>
-      <p><strong>S:</strong> Move Backwards</p>
-      <p><strong>A:</strong> Move Left</p>
-      <p><strong>D:</strong> Move Right</p>
-      <p><strong>SPACE:</strong> Move Up</p>
-      <p><strong>Q:</strong> Move Down</p>
-    </div>
-    
     <br>
 
-    <div class="container mt-3">
+    <div class="container">
       <form action="">
         <label>Type:</label>
         <select class="form-select" id="lighttype" name="lighttype">
