@@ -3,7 +3,7 @@ name: Generate JSDoc
 on:
   push:
     branches:
-      - dev/Jaques
+      - toDefine
 
 jobs:
   generate-jsdoc:
