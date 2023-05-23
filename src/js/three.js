@@ -8,7 +8,7 @@ const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
-  1000
+  500
 );
 
 const renderer = new THREE.WebGLRenderer({
@@ -66,21 +66,35 @@ function processKeyBoard(delta) {
   }
 }
 
-
-
-var model_src = "modelos/tiger.obj";
+var model_src = "tiger.obj";
 var model_texture = "modelos/tiger_texture.jpg";
 var model_data;
+
+async function test(location){
+  var response = await fetch(location);
+  const text = await response.text();
+  return text;
+}
+
+async function loadModel() {
+  try {
+    const text = await test('models/cat.obj');
+    console.log("TESTE: " + text);
+    // Use the text content here to load the model
+  } catch (error) {
+    console.log("Error loading model:", error);
+  }
+}
+
+loadModel();
 
 
 const loader = new OBJLoader();
 
 loader.load(
-  'modelos/bird.obj',
+  'src/js/modelos/cat.obj',
   (object) => {
-    object.position.set(0, 0, -53);
     scene.add(object);
-    renderer.render(scene, camera);
   },
   function (xhr) {
     console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -92,7 +106,7 @@ loader.load(
   }
 );
 
-const backgroundColor = 0xabcdef;
+const backgroundColor = 0xffffff;
 
 scene.background = new THREE.Color(backgroundColor);
 
