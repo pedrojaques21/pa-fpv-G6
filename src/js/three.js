@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 
 const scene = new THREE.Scene();
@@ -23,48 +23,82 @@ camera.position.z = 5;
 
 const startButton = document.getElementById('startButton');
 startButton.addEventListener(
-    'click',
-    function () {
-        controls.lock()
-    },
-    false
+  'click',
+  function () {
+    controls.lock()
+  },
+  false
 )
 
-const controls = new PointerLockControls(camera,renderer.domElement)
+const controls = new PointerLockControls(camera, renderer.domElement)
 const clock = new THREE.Clock();
 
 const keyBoard = [];
-addEventListener('keydown',(e) =>{
+addEventListener('keydown', (e) => {
   keyBoard[e.key] = true;
   console.log(keyBoard);
 });
 
-addEventListener('keyup',(e) =>{
+addEventListener('keyup', (e) => {
   keyBoard[e.key] = false;
 });
 
-function processKeyBoard(delta){
+function processKeyBoard(delta) {
   let speed = 5;
   let actualSpeed = speed * delta;
-  if(keyBoard['w']){
+  if (keyBoard['w']) {
     controls.moveForward(actualSpeed);
   }
-  if(keyBoard['s']){
+  if (keyBoard['s']) {
     controls.moveForward(-actualSpeed);
   }
-  if(keyBoard['a']){
+  if (keyBoard['a']) {
     controls.moveRight(-actualSpeed);
   }
-  if(keyBoard['d']){
+  if (keyBoard['d']) {
     controls.moveRight(actualSpeed);
   }
-  if(keyBoard['e']){
+  if (keyBoard['e']) {
     controls.getObject().position.y += actualSpeed;
   }
-  if(keyBoard['q']){
+  if (keyBoard['q']) {
     controls.getObject().position.y -= actualSpeed;
   }
 }
+
+
+
+var model_src = "modelos/tiger.obj";
+var model_texture = "modelos/tiger_texture.jpg";
+var model_data;
+
+
+const loader = new OBJLoader();
+
+loader.load(
+  'modelos/bird.obj',
+  (object) => {
+    object.position.set(0, 0, -53);
+    scene.add(object);
+    renderer.render(scene, camera);
+  },
+  function (xhr) {
+    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+  },
+  function (error) {
+
+    console.log('An error happened: ' + error);
+
+  }
+);
+
+const backgroundColor = 0xabcdef;
+
+scene.background = new THREE.Color(backgroundColor);
+
+
+
+
 
 const objectsCount = Math.floor(Math.random() * 26) + 5;
 console.log(objectsCount);
@@ -127,6 +161,8 @@ for (let i = 0; i < objectsCount; i++) {
   scene.add(mesh);
   meshes.push(mesh);
 }
+
+
 
 const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(8, 8, 8);
