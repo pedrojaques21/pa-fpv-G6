@@ -20,7 +20,6 @@ const camera = new THREE.PerspectiveCamera(
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector('#gl-canvas'),
 });
-
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(800, 600);
 
@@ -28,46 +27,42 @@ camera.position.y = 0;
 camera.position.z = 5;
 
 const startButton = document.getElementById('startButton');
-startButton.addEventListener(
-    'click',
-    function () {
-        controls.lock()
-    },
-    false
-)
+startButton.addEventListener('click', function () {
+  controls.lock();
+}, false);
 
-const controls = new PointerLockControls(camera,renderer.domElement)
+const controls = new PointerLockControls(camera, renderer.domElement);
 const clock = new THREE.Clock();
 
-const keyBoard = [];
-addEventListener('keydown',(e) =>{
+const keyBoard = {};
+addEventListener('keydown', (e) => {
   keyBoard[e.key] = true;
-  console.log(keyBoard);
 });
 
-addEventListener('keyup',(e) =>{
+addEventListener('keyup', (e) => {
   keyBoard[e.key] = false;
 });
 
-function processKeyBoard(delta){
-  let speed = 5;
-  let actualSpeed = speed * delta;
-  if(keyBoard['w']){
+function processKeyboard(delta) {
+  const speed = 5;
+  const actualSpeed = speed * delta;
+
+  if (keyBoard['w']) {
     controls.moveForward(actualSpeed);
   }
-  if(keyBoard['s']){
+  if (keyBoard['s']) {
     controls.moveForward(-actualSpeed);
   }
-  if(keyBoard['a']){
+  if (keyBoard['a']) {
     controls.moveRight(-actualSpeed);
   }
-  if(keyBoard['d']){
+  if (keyBoard['d']) {
     controls.moveRight(actualSpeed);
   }
-  if(keyBoard['e']){
+  if (keyBoard['e']) {
     controls.getObject().position.y += actualSpeed;
   }
-  if(keyBoard['q']){
+  if (keyBoard['q']) {
     controls.getObject().position.y -= actualSpeed;
   }
 }
@@ -77,66 +72,55 @@ console.log(objectsCount);
 
 const meshes = [];
 
+function createCube() {
+  const cubeSize = Math.random() * 0.4 + 0.1;
+  const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize, 1, 1, 1);
+  const material = new THREE.MeshStandardMaterial({ vertexColors: true });
+  const colors = [];
+
+  const color = new THREE.Color();
+  color.set(getRandomColor());
+
+  for (let i = 0; i < 24; i++) {
+    colors.push(color.r, color.g, color.b);
+  }
+
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  return new THREE.Mesh(geometry, material);
+}
+
+function createPyramid() {
+  const pyramidSize = Math.random() * 0.4 + 0.1;
+  const geometry = new THREE.TetrahedronBufferGeometry(pyramidSize, 0);
+  const material = new THREE.MeshStandardMaterial({ vertexColors: true });
+  const colors = [];
+
+  const color = new THREE.Color();
+  color.set(getRandomColor());
+
+  for (let i = 0; i < 12; i++) {
+    colors.push(color.r, color.g, color.b);
+  }
+
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  return new THREE.Mesh(geometry, material);
+}
+
 for (let i = 0; i < objectsCount; i++) {
   console.log('Loop iteration:', i);
   const randomX = Math.random() * 20 - 10;
   const randomY = Math.random() * 2 - 1;
   const randomZ = Math.random() * 20 - 10;
 
-  let geometry, material;
-  const randomShape = Math.random() < 0.5 ? 'cube' : 'pyramid';
+  const randomShape = Math.random() < 0.5 ? createCube() : createPyramid();
 
-  if (randomShape === 'cube') {
-    const cubeSize = Math.random() * 0.4 + 0.1;
-    geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize, 1, 1, 1);
-    const positionAttribute = geometry.getAttribute('position');
-
-    const colors = [];
-    const color = new THREE.Color();
-
-    for (let i = 0; i < positionAttribute.count; i += 4) {
-      color.set(getRandomColor());
-
-      colors.push(color.r, color.g, color.b);
-      colors.push(color.r, color.g, color.b);
-      colors.push(color.r, color.g, color.b);
-      colors.push(color.r, color.g, color.b);
-      colors.push(color.r, color.g, color.b);
-      colors.push(color.r, color.g, color.b);
-
-    }
-    material = new THREE.MeshStandardMaterial({ vertexColors: true });
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-  } else if (randomShape === 'pyramid') {
-    const pyramidSize = Math.random() * 0.4 + 0.1;
-    geometry = new THREE.TetrahedronBufferGeometry(pyramidSize, 0); // radius and detail
-    const positionAttribute = geometry.getAttribute('position'); //->12 vertices / 4 faces = 3
-    const colors = [];
-    const color = new THREE.Color();
-    console.log('vertices: ' + positionAttribute.count);
-    for (let i = 0; i < positionAttribute.count; i += 3) {
-
-      color.set(getRandomColor());
-
-      colors.push(color.r, color.g, color.b);
-      colors.push(color.r, color.g, color.b);
-      colors.push(color.r, color.g, color.b);
-      colors.push(color.r, color.g, color.b);
-
-    }
-    material = new THREE.MeshStandardMaterial({ vertexColors: true });
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-  }
-
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.position.set(randomX, randomY, randomZ);
-  scene.add(mesh);
-  meshes.push(mesh);
+  randomShape.position.set(randomX, randomY, randomZ);
+  scene.add(randomShape);
+  meshes.push(randomShape);
 }
 
-//const lightHelper = new THREE.PointLightHelper(pointLight);
 const gridHelper = new THREE.GridHelper(200, 50);
-scene.add(/*lightHelper, */gridHelper);
+scene.add(gridHelper);
 
 const lightTypeSelect = document.getElementById('lightTypeSelect');
 const lightPosXInput = document.getElementById('lightPosXInput');
@@ -146,6 +130,9 @@ const colorRInput = document.getElementById('colorRInput');
 const colorGInput = document.getElementById('colorGInput');
 const colorBInput = document.getElementById('colorBInput');
 
+let light;
+let lightHelper;
+
 lightTypeSelect.addEventListener('change', updateLightType);
 lightPosXInput.addEventListener('input', updateLightPosition);
 lightPosYInput.addEventListener('input', updateLightPosition);
@@ -154,18 +141,15 @@ colorRInput.addEventListener('input', updateLightColor);
 colorGInput.addEventListener('input', updateLightColor);
 colorBInput.addEventListener('input', updateLightColor);
 
-let light;
-let lightHelper;
-
 function updateLightType() {
   const lightType = lightTypeSelect.value;
-  
-  // Remove a luz existente, se houver
+
+  // Remove the existing light if there is one
   if (light) {
-    scene.remove(light,lightHelper);
+    scene.remove(light, lightHelper);
   }
-  
-  // Cria uma nova luz com base no tipo selecionado
+
+  // Create a new light based on the selected type
   if (lightType === 'ambient') {
     light = new THREE.AmbientLight(0xffffff);
     lightHelper = new THREE.AmbientLightHelper(light);
@@ -179,15 +163,15 @@ function updateLightType() {
     light = new THREE.SpotLight(0xffffff);
     lightHelper = new THREE.SpotLightHelper(light);
   }
-  
-  // Define a posição da luz com base nos valores atuais dos campos de entrada
+
+  // Set the light position based on the current input field values
   light.position.set(
     parseFloat(lightPosXInput.value),
     parseFloat(lightPosYInput.value),
     parseFloat(lightPosZInput.value)
   );
-  
-  // Adiciona a luz à cena
+
+  // Add the light to the scene
   scene.add(light, lightHelper);
 }
 
@@ -239,7 +223,7 @@ function animate() {
     animateFunction();
   }
   let delta = clock.getDelta();
-  processKeyBoard(delta);
+  processKeyboard(delta);
 
   renderer.render(scene, camera);
 }
