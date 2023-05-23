@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronBufferGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, AmbientLightHelper, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, AmbientLightHelper, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock } from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
@@ -17,6 +17,10 @@ function setupScene() {
   camera.position.z = 5;
 
   const controls = new PointerLockControls(camera, renderer.domElement);
+
+  
+  const backgroundColor = 0xffffff;
+  scene.background = new Color(backgroundColor);
 
   return { scene, camera, renderer, controls };
 }
@@ -111,7 +115,7 @@ function createCube() {
  */
 function createPyramid() {
   const pyramidSize = Math.random() * 0.4 + 0.1;
-  const geometry = new TetrahedronBufferGeometry(pyramidSize, 0);
+  const geometry = new TetrahedronGeometry(pyramidSize, 0);
   const material = new MeshStandardMaterial({ vertexColors: true });
   const colors = [];
 
