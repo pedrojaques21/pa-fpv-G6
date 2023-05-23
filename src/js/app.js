@@ -91,11 +91,14 @@ function createCube() {
   const material = new MeshStandardMaterial({ vertexColors: true });
   const colors = [];
 
-  const color = new Color();
-  color.setRGB(Math.random(), Math.random(), Math.random());
+  for (let i = 0; i < 6; i++) {
+    const color = new Color();
+    color.setRGB(Math.random(), Math.random(), Math.random());
 
-  for (let i = 0; i < 24; i++) {
-    colors.push(color.r, color.g, color.b);
+    // Assign the same color to all vertices of the current face
+    for (let j = 0; j < 4; j++) {
+      colors.push(color.r, color.g, color.b);
+    }
   }
 
   geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
@@ -112,11 +115,14 @@ function createPyramid() {
   const material = new MeshStandardMaterial({ vertexColors: true });
   const colors = [];
 
-  const color = new Color();
-  color.setRGB(Math.random(), Math.random(), Math.random());
+  for (let i = 0; i < 6; i++) {
+    const color = new Color();
+    color.setRGB(Math.random(), Math.random(), Math.random());
 
-  for (let i = 0; i < 12; i++) {
-    colors.push(color.r, color.g, color.b);
+    // Assign the same color to all vertices of the current face
+    for (let j = 0; j < 4; j++) {
+      colors.push(color.r, color.g, color.b);
+    }
   }
 
   geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
@@ -183,7 +189,7 @@ function updateLightType() {
 
   // Create a new light based on the selected type
   if (lightType === 'ambient') {
-    light = new AmbientLight(0xffffff, 0.5);
+    light = new AmbientLight(0xffffff);
   } else if (lightType === 'point') {
     light = new PointLight(0xffffff);
     lightHelper = new PointLightHelper(light);
@@ -193,6 +199,8 @@ function updateLightType() {
   } else if (lightType === 'spot') {
     light = new SpotLight(0xffffff);
     lightHelper = new SpotLightHelper(light);
+  } else if (lightType === 'none') {
+    scene.remove(light, lightHelper);
   }
 
   // Set the light position based on the current input field values
