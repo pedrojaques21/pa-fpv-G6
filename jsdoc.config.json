@@ -4,7 +4,7 @@
       "exclude": ["node_modules"]
     },
     "opts": {
-      "destination": "out"
+      "destination": "docs"
     }
   }
   

@@ -3,7 +3,7 @@ name: Generate JSDoc
 on:
   push:
     branches:
-      - toDefine
+      - dev/Jaques
 
 jobs:
   generate-jsdoc:
@@ -28,4 +28,4 @@ jobs:
         uses: actions/upload-artifact@v3.1.2
         with:
           name: jsdoc
-          path: ./out
+          path: ./docs
