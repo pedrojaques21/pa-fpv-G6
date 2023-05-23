@@ -134,12 +134,6 @@ for (let i = 0; i < objectsCount; i++) {
   meshes.push(mesh);
 }
 
-//const pointLight = new THREE.PointLight(0xffffff);
-//pointLight.position.set(8, 8, 8);
-
-const ambientLight = new THREE.AmbientLight(0xffffff);
-scene.add(ambientLight);
-
 //const lightHelper = new THREE.PointLightHelper(pointLight);
 const gridHelper = new THREE.GridHelper(200, 50);
 scene.add(/*lightHelper, */gridHelper);
@@ -161,24 +155,29 @@ colorGInput.addEventListener('input', updateLightColor);
 colorBInput.addEventListener('input', updateLightColor);
 
 let light;
+let lightHelper;
 
 function updateLightType() {
   const lightType = lightTypeSelect.value;
   
   // Remove a luz existente, se houver
   if (light) {
-    scene.remove(light);
+    scene.remove(light,lightHelper);
   }
   
   // Cria uma nova luz com base no tipo selecionado
   if (lightType === 'ambient') {
     light = new THREE.AmbientLight(0xffffff);
+    lightHelper = new THREE.AmbientLightHelper(light);
   } else if (lightType === 'point') {
     light = new THREE.PointLight(0xffffff);
+    lightHelper = new THREE.PointLightHelper(light);
   } else if (lightType === 'directional') {
     light = new THREE.DirectionalLight(0xffffff);
+    lightHelper = new THREE.DirectionalLightHelper(light);
   } else if (lightType === 'spot') {
     light = new THREE.SpotLight(0xffffff);
+    lightHelper = new THREE.SpotLightHelper(light);
   }
   
   // Define a posição da luz com base nos valores atuais dos campos de entrada
@@ -189,7 +188,7 @@ function updateLightType() {
   );
   
   // Adiciona a luz à cena
-  scene.add(light);
+  scene.add(light, lightHelper);
 }
 
 function updateLightPosition() {
