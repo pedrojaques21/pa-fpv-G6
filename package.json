@@ -12,7 +12,7 @@
   "dependencies": {
     "jsdoc": "^4.0.2",
     "node.js": "^0.0.1-security",
-    "three": "^0.152.2",    
-    "parcel": "^2.8.3"
+    "three": "^0.152.2",
+    "vite": "^4.3.8"
   }
 }

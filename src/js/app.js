@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, AmbientLightHelper, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock } from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
@@ -141,7 +141,7 @@ const meshes = [];
 /**
  * Creates a specified number of random objects and adds them to the scene.
  */
-/*async*/ function createRandomObjects() {
+async function createRandomObjects() {
   const loader = new OBJLoader();
 
   for (let i = 0; i < objectsCount; i++) {
@@ -150,7 +150,7 @@ const meshes = [];
     const randomY = Math.random() * 2 - 1;
     const randomZ = Math.random() * 20 - 10;
 
-    /*const modelPath = `./src/models/cat.obj`;
+    const modelPath = `./models/cat.obj`;
 
     try {
       const object = await new Promise((resolve, reject) => {
@@ -167,7 +167,7 @@ const meshes = [];
       meshes.push(object);
     } catch (error) {
       console.error(`Failed to load model at '${modelPath}':`, error);
-    }*/
+    }
 
     const randomShape = Math.random() < 0.5 ? createCube() : createPyramid();
 
