@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock, TextureLoader } from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
@@ -138,43 +138,63 @@ console.log(objectsCount);
 
 const meshes = [];
 
+async function createObj() {
+  const randomX = Math.random() * 20 - 10;
+  const randomY = Math.random() * 2 - 1;
+  const randomZ = Math.random() * 20 - 10;
+  const loader = new OBJLoader();
+  const modelPath = './models/Astronaut.obj';
+  const modelTexturePath = './models/Astronaut.png';
+
+  try {
+    const object = await new Promise((resolve, reject) => {
+      loader.load(
+        modelPath,
+        resolve,
+        undefined,
+        reject
+      );
+    });
+
+    var texture = new TextureLoader().load(modelTexturePath);
+    object.traverse((child) => {
+      if (child instanceof Mesh) {
+        child.material.map = texture;
+        child.geometry.computeVertexNormals();
+      }
+    });
+
+    object.position.set(randomX, randomY, randomZ);
+    scene.add(object);
+    meshes.push(object);
+  } catch (error) {
+    console.error(`Failed to load model at '${modelPath}':`, error);
+  }
+}
+
+
 /**
  * Creates a specified number of random objects and adds them to the scene.
  */
 async function createRandomObjects() {
-  const loader = new OBJLoader();
-
+  
   for (let i = 0; i < objectsCount; i++) {
-    console.log('Loop iteration:', i);
     const randomX = Math.random() * 20 - 10;
     const randomY = Math.random() * 2 - 1;
     const randomZ = Math.random() * 20 - 10;
-
-    const modelPath = `./models/cat.obj`;
-
-    try {
-      const object = await new Promise((resolve, reject) => {
-        loader.load(
-          modelPath,
-          resolve,
-          undefined,
-          reject
-        );
-      });
-
-      object.position.set(randomX, randomY, randomZ);
-      scene.add(object);
-      meshes.push(object);
-    } catch (error) {
-      console.error(`Failed to load model at '${modelPath}':`, error);
+  
+    let randomShape;
+    if (Math.random() < 0.3) {
+      createObj();
+    } else {
+      randomShape = Math.random() < 0.5 ? createCube() : createPyramid();
+      randomShape.position.set(randomX, randomY, randomZ);
+      scene.add(randomShape);
+      meshes.push(randomShape);
     }
-
-    const randomShape = Math.random() < 0.5 ? createCube() : createPyramid();
-
-    randomShape.position.set(randomX, randomY, randomZ);
-    scene.add(randomShape);
-    meshes.push(randomShape);
+  
   }
+  
 }
 
 createRandomObjects();
