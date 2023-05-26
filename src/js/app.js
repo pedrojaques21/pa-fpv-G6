@@ -1,4 +1,4 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock, TextureLoader } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock, TextureLoader, CameraHelper } from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
@@ -8,17 +8,18 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
  */
 function setupScene() {
   const scene = new Scene();
-  const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
   const renderer = new WebGLRenderer({ canvas: document.querySelector('#gl-canvas') });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(800, 600);
 
-  camera.position.y = 0;
-  camera.position.z = 5;
+  camera.position.y = 10;
+  camera.position.x = 10;
+  camera.position.z = 10;
 
   const controls = new PointerLockControls(camera, renderer.domElement);
 
-  
+
   const backgroundColor = 0xffffff;
   scene.background = new Color(backgroundColor);
 
@@ -91,18 +92,22 @@ function processKeyboard(delta) {
  */
 function createCube() {
   const cubeSize = Math.random() * 0.4 + 0.1;
-  const geometry = new BoxGeometry(cubeSize, cubeSize, cubeSize, 1, 1, 1);
+  const geometry = new BoxGeometry(cubeSize, cubeSize, cubeSize).toNonIndexed();
   const material = new MeshStandardMaterial({ vertexColors: true });
   const colors = [];
-
-  for (let i = 0; i < 6; i++) {
-    const color = new Color();
-    color.setRGB(Math.random(), Math.random(), Math.random());
+  const positionAttribute = geometry.getAttribute('position');
+  for (let i = 0; i < positionAttribute.count; i += 3) {
+    const color = new Color(Math.random() * 0xffffff);
 
     // Assign the same color to all vertices of the current face
-    for (let j = 0; j < 4; j++) {
-      colors.push(color.r, color.g, color.b);
-    }
+    colors.push(
+      color.r, color.g, color.b,
+      color.r, color.g, color.b,
+      color.r, color.g, color.b,
+      color.r, color.g, color.b,
+      color.r, color.g, color.b,
+      color.r, color.g, color.b
+    );
   }
 
   geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
@@ -115,36 +120,77 @@ function createCube() {
  */
 function createPyramid() {
   const pyramidSize = Math.random() * 0.4 + 0.1;
-  const geometry = new TetrahedronGeometry(pyramidSize, 0);
+  const geometry = new TetrahedronGeometry(pyramidSize, 0).toNonIndexed();
   const material = new MeshStandardMaterial({ vertexColors: true });
   const colors = [];
+  const positionAttribute = geometry.getAttribute('position');
+  for (let i = 0; i < positionAttribute.count; i += 3) {
+    const color = new Color(Math.random() * 0xffffff);
 
-  for (let i = 0; i < 6; i++) {
-    const color = new Color();
-    color.setRGB(Math.random(), Math.random(), Math.random());
-
-    // Assign the same color to all vertices of the current face
-    for (let j = 0; j < 4; j++) {
-      colors.push(color.r, color.g, color.b);
-    }
+    colors.push(
+      color.r, color.g, color.b,
+      color.r, color.g, color.b,
+      color.r, color.g, color.b
+    );
   }
-
   geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
   return new Mesh(geometry, material);
 }
+
+
+function randomObj() {
+  const randomNumber = Math.floor(Math.random() * 5) + 1;
+  let modelPath;
+  let modelTexturePath;
+
+  switch (randomNumber) {
+    case 1:
+      modelPath = './models/Astronaut.obj';
+      modelTexturePath = './models/Astronaut.png';
+      break;
+    case 2:
+      modelPath = './models/bird.obj';
+      modelTexturePath = './models/bird.jpg';
+      break;
+    case 3:
+      modelPath = './models/cat.obj';
+      modelTexturePath = './models/cat_texture.png';
+      break;
+    case 4:
+      modelPath = './models/pig.obj';
+      modelTexturePath = './models/pig.png';
+      break;
+    case 5:
+      modelPath = './models/tiger.obj';
+      modelTexturePath = './models/tiger_texture.jpg';
+      break;
+    default:
+      // Handle any unexpected random number here
+      modelPath = './models/default.obj';
+      modelTexturePath = './models/default.jpg';
+      break;
+  }
+
+  return [modelPath,modelTexturePath];
+}
+
+
 
 const objectsCount = Math.floor(Math.random() * 26) + 5;
 console.log(objectsCount);
 
 const meshes = [];
-
+let test = [];
 async function createObj() {
   const randomX = Math.random() * 20 - 10;
   const randomY = Math.random() * 2 - 1;
   const randomZ = Math.random() * 20 - 10;
   const loader = new OBJLoader();
-  const modelPath = './models/Astronaut.obj';
-  const modelTexturePath = './models/Astronaut.png';
+  const [modelPath, modelTexturePath] = randomObj();
+  const parts = modelPath.split("/");
+  const filename = parts[parts.length - 1];
+  const name = filename.split(".")[0];
+  console.log("Model: " + name);
 
   try {
     const object = await new Promise((resolve, reject) => {
@@ -164,37 +210,50 @@ async function createObj() {
       }
     });
 
-    object.position.set(randomX, randomY, randomZ);
+    if(name === "Astronaut"){
+      const size = 0.3;
+      object.scale.set(size,size,size);
+
+    }else if(name === "tiger"){
+      const size = 0.0004;
+      object.scale.set(size,size,size);
+    }else if(name === "cat" || name === "bird" || name === "pig"){
+      const size = 0.004;
+      object.scale.set(size,size,size);
+    }
+    object.position.set(randomX, randomY, randomZ);   
     scene.add(object);
-    meshes.push(object);
+    test.push(object);
   } catch (error) {
     console.error(`Failed to load model at '${modelPath}':`, error);
   }
 }
 
 
+
 /**
  * Creates a specified number of random objects and adds them to the scene.
  */
 async function createRandomObjects() {
-  
+
   for (let i = 0; i < objectsCount; i++) {
     const randomX = Math.random() * 20 - 10;
     const randomY = Math.random() * 2 - 1;
     const randomZ = Math.random() * 20 - 10;
-  
+
     let randomShape;
     if (Math.random() < 0.3) {
       createObj();
+      console.log("TESTE: " + test)
     } else {
       randomShape = Math.random() < 0.5 ? createCube() : createPyramid();
       randomShape.position.set(randomX, randomY, randomZ);
       scene.add(randomShape);
       meshes.push(randomShape);
     }
-  
+
   }
-  
+
 }
 
 createRandomObjects();
@@ -289,6 +348,7 @@ function updateLightColor() {
  */
 function animateRandomRotation() {
   for (const mesh of meshes) {
+    console.log("MESH: " + mesh);
     const randomSpeedX = (Math.random() - 0.5) * 0.1;
     const randomSpeedY = (Math.random() - 0.5) * 0.1;
     const randomSpeedZ = (Math.random() - 0.5) * 0.1;
