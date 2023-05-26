@@ -4,6 +4,8 @@ import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeomet
   } from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+// import bricks from 'brick_roughness.jpg';
+// import lava from 'lavatile.jpg';
 
 /**
  * Initializes the scene, camera, renderer, controls, clock, and event listeners.
@@ -84,7 +86,7 @@ function setupScene() {
 
   const controls = new PointerLockControls(camera, renderer.domElement);
   
-  const backgroundColor = 0xffffff;
+  const backgroundColor = 0x101018;
   scene.background = new Color(backgroundColor);
 
   return { scene, camera, renderer, controls };
@@ -157,9 +159,7 @@ async function createRandomObjects() {
       scene.add(randomShape);
       meshes.push(randomShape);
     }
-  
   }
-  
 }
 
 
@@ -187,11 +187,19 @@ function createCube() {
       }
     }
     geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
-    return new Mesh(geometry, material);    
+    const coloredCube = new Mesh(geometry, material);
+    return coloredCube;
+
   } else {
-    const textureLoader = new TextureLoader().load('./textures/brick_roughness.jpg');
+    //'./textures/negy.jpg'
+    //'./textures/disturb.jpg'
+    //'./textures/brick_roughness.jpg'
+
+
+    const textureLoader = new TextureLoader().load('./textures/disturb.jpg');
     let material = new MeshStandardMaterial({ map: textureLoader});
-    return new Mesh(geometry, material);
+    const texturedCube = new Mesh(geometry, material);
+    return texturedCube;
   }
   
 }
@@ -226,7 +234,7 @@ function createPyramid() {
 
   } else {
 
-    const textureLoader = new TextureLoader().load('./textures/lavatile.png');
+    const textureLoader = new TextureLoader().load('./textures/lavatile.jpg');
     let material = new MeshStandardMaterial({ map: textureLoader});
     return new Mesh(geometry, material);
   }
@@ -372,3 +380,9 @@ function animate() {
 
   renderer.render(scene, camera);
 }
+
+// window.addEventListener('resize', function() {
+//   camera.aspect = window.innerWidth / window.innerHeight;
+//   camera.updateProjectionMatrix();
+//   renderer.setSize(window.innerWidth , window.innerHeight);
+// });
