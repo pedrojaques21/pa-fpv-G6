@@ -20,7 +20,7 @@ function setupScene() {
   const controls = new PointerLockControls(camera, renderer.domElement);
 
 
-  const backgroundColor = 0xffffff;
+  const backgroundColor = 0x101018;
   scene.background = new Color(backgroundColor);
 
   return { scene, camera, renderer, controls };
@@ -177,20 +177,16 @@ function randomObj() {
 
 
 const objectsCount = Math.floor(Math.random() * 26) + 5;
-console.log(objectsCount);
 
 const meshes = [];
-let test = [];
+const test = [];
+
 async function createObj() {
-  const randomX = Math.random() * 20 - 10;
-  const randomY = Math.random() * 2 - 1;
-  const randomZ = Math.random() * 20 - 10;
   const loader = new OBJLoader();
   const [modelPath, modelTexturePath] = randomObj();
   const parts = modelPath.split("/");
   const filename = parts[parts.length - 1];
   const name = filename.split(".")[0];
-  console.log("Model: " + name);
 
   try {
     const object = await new Promise((resolve, reject) => {
@@ -210,25 +206,22 @@ async function createObj() {
       }
     });
 
-    if(name === "Astronaut"){
+    if (name === "Astronaut") {
       const size = 0.3;
-      object.scale.set(size,size,size);
-
-    }else if(name === "tiger"){
+      object.scale.set(size, size, size);
+    } else if (name === "tiger") {
       const size = 0.0004;
-      object.scale.set(size,size,size);
-    }else if(name === "cat" || name === "bird" || name === "pig"){
+      object.scale.set(size, size, size);
+    } else if (name === "cat" || name === "bird" || name === "pig") {
       const size = 0.004;
-      object.scale.set(size,size,size);
+      object.scale.set(size, size, size);
     }
-    object.position.set(randomX, randomY, randomZ);   
-    scene.add(object);
-    test.push(object);
+    return object;
   } catch (error) {
     console.error(`Failed to load model at '${modelPath}':`, error);
+    throw error;
   }
 }
-
 
 
 /**
@@ -242,9 +235,16 @@ async function createRandomObjects() {
     const randomZ = Math.random() * 20 - 10;
 
     let randomShape;
+    let randomObj;
     if (Math.random() < 0.3) {
-      createObj();
-      console.log("TESTE: " + test)
+      randomObj = createObj();
+      randomObj.then(myObj => {
+        myObj.position.set(randomX, randomY, randomZ);
+        scene.add(myObj);
+        test.push(myObj);
+        animateRandomRotationObj();
+      })
+      
     } else {
       randomShape = Math.random() < 0.5 ? createCube() : createPyramid();
       randomShape.position.set(randomX, randomY, randomZ);
@@ -348,7 +348,6 @@ function updateLightColor() {
  */
 function animateRandomRotation() {
   for (const mesh of meshes) {
-    console.log("MESH: " + mesh);
     const randomSpeedX = (Math.random() - 0.5) * 0.1;
     const randomSpeedY = (Math.random() - 0.5) * 0.1;
     const randomSpeedZ = (Math.random() - 0.5) * 0.1;
@@ -365,6 +364,29 @@ function animateRandomRotation() {
     animateFunctions.push(update);
   }
 }
+
+/**
+ * Animates the random rotation of the 3d Objects.
+ */
+function animateRandomRotationObj() {
+  for (const mesh of test) {
+    const randomSpeedX = (Math.random() - 0.5) * 0.1;
+    const randomSpeedY = (Math.random() - 0.5) * 0.1;
+    const randomSpeedZ = (Math.random() - 0.5) * 0.1;
+
+    /**
+     * Updates the rotation of the mesh based on the random speeds.
+     */
+    function update() {
+      mesh.rotation.x += randomSpeedX;
+      mesh.rotation.y += randomSpeedY;
+      mesh.rotation.z += randomSpeedZ;
+    }
+
+    animateFunctions.push(update);
+  }
+}
+
 
 const animateFunctions = [];
 
