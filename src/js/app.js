@@ -1,6 +1,72 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper, DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock, TextureLoader } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshBasicMaterial,
+  MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper,
+   DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock, TextureLoader, AxesHelper
+  } from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
+
+/**
+ * Initializes the scene, camera, renderer, controls, clock, and event listeners.
+ */
+const { scene, camera, renderer, controls } = setupScene();
+const clock = new Clock();
+
+// Start button
+const startButton = document.getElementById('startButton');
+startButton.addEventListener('click', function () {
+  controls.lock();
+}, false);
+
+// Event listeners for keyboard input
+const keyState = {};
+document.addEventListener('keydown', handleKeyDown);
+document.addEventListener('keyup', handleKeyUp);
+
+// Grid helper
+const gridHelper = new GridHelper(200, 50);
+scene.add(gridHelper);
+
+// Object creation
+const objectsCount = Math.floor(Math.random() * 26) + 5;
+console.log(objectsCount);
+const meshes = [];
+createRandomObjects();
+
+// Light controls setup
+const lightTypeSelect = document.getElementById('lightTypeSelect');
+const lightPosXInput = document.getElementById('lightPosXInput');
+const lightPosYInput = document.getElementById('lightPosYInput');
+const lightPosZInput = document.getElementById('lightPosZInput');
+const colorRInput = document.getElementById('colorRInput');
+const colorGInput = document.getElementById('colorGInput');
+const colorBInput = document.getElementById('colorBInput');
+
+// Light variables
+let light;
+let lightHelper;
+
+// Event listeners for light controls
+lightTypeSelect.addEventListener('change', updateLightType);
+lightPosXInput.addEventListener('input', updateLightPosition);
+lightPosYInput.addEventListener('input', updateLightPosition);
+lightPosZInput.addEventListener('input', updateLightPosition);
+colorRInput.addEventListener('input', updateLightColor);
+colorGInput.addEventListener('input', updateLightColor);
+colorBInput.addEventListener('input', updateLightColor);
+
+// animation
+
+const animateFunctions = [];
+
+animateRandomRotation();
+
+animate();
+
+
+
+//***********************************************************
+//*                      FUNCTIONS                          *
+//***********************************************************
 
 /**
  * Sets up the scene with a camera, renderer, and controls.
@@ -17,7 +83,6 @@ function setupScene() {
   camera.position.z = 5;
 
   const controls = new PointerLockControls(camera, renderer.domElement);
-
   
   const backgroundColor = 0xffffff;
   scene.background = new Color(backgroundColor);
@@ -25,18 +90,6 @@ function setupScene() {
   return { scene, camera, renderer, controls };
 }
 
-/**
- * Initializes the scene, camera, renderer, controls, clock, and event listeners.
- */
-const { scene, camera, renderer, controls } = setupScene();
-const clock = new Clock();
-
-const startButton = document.getElementById('startButton');
-startButton.addEventListener('click', function () {
-  controls.lock();
-}, false);
-
-const keyState = {};
 
 /**
  * Handles the keydown event and updates the key state.
@@ -46,6 +99,7 @@ function handleKeyDown(event) {
   keyState[event.key] = true;
 }
 
+
 /**
  * Handles the keyup event and updates the key state.
  * @param {KeyboardEvent} event - The keyup event.
@@ -54,8 +108,6 @@ function handleKeyUp(event) {
   keyState[event.key] = false;
 }
 
-document.addEventListener('keydown', handleKeyDown);
-document.addEventListener('keyup', handleKeyUp);
 
 /**
  * Processes the keyboard input based on the current key state.
@@ -85,29 +137,65 @@ function processKeyboard(delta) {
   }
 }
 
+
+/**
+ * Creates a specified number of random objects and adds them to the scene.
+ */
+async function createRandomObjects() {
+  
+  for (let i = 0; i < objectsCount; i++) {
+    const randomX = Math.random() * 20 - 10;
+    const randomY = Math.random() * 2 - 1;
+    const randomZ = Math.random() * 20 - 10;
+  
+    let randomShape;
+    if (Math.random() < 0.3) {
+      createObj();
+    } else {
+      randomShape = Math.random() < 0.5 ? createCube() : createPyramid();
+      randomShape.position.set(randomX, randomY, randomZ);
+      scene.add(randomShape);
+      meshes.push(randomShape);
+    }
+  
+  }
+  
+}
+
+
 /**
  * Creates a cube mesh with random size and color.
  * @returns {Mesh} The created cube mesh.
  */
 function createCube() {
   const cubeSize = Math.random() * 0.4 + 0.1;
-  const geometry = new BoxGeometry(cubeSize, cubeSize, cubeSize, 1, 1, 1);
-  const material = new MeshStandardMaterial({ vertexColors: true });
-  const colors = [];
+  const geometry = new BoxGeometry(cubeSize, cubeSize, cubeSize);
 
-  for (let i = 0; i < 6; i++) {
-    const color = new Color();
-    color.setRGB(Math.random(), Math.random(), Math.random());
+  const cubeHasTexture = Math.random() < 0.5 ? true : false;
+  
+  if (!cubeHasTexture) {
 
-    // Assign the same color to all vertices of the current face
-    for (let j = 0; j < 4; j++) {
-      colors.push(color.r, color.g, color.b);
+    let material = new MeshStandardMaterial({ vertexColors: true });
+    const colors = [];
+    for (let i = 0; i < 6; i++) {
+      const color = new Color();
+      color.setRGB(Math.random(), Math.random(), Math.random());
+
+      // Assign the same color to all vertices of the current face
+      for (let j = 0; j < 4; j++) {
+        colors.push(color.r, color.g, color.b);
+      }
     }
+    geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
+    return new Mesh(geometry, material);    
+  } else {
+    const textureLoader = new TextureLoader().load('./textures/brick_roughness.jpg');
+    let material = new MeshStandardMaterial({ map: textureLoader});
+    return new Mesh(geometry, material);
   }
-
-  geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
-  return new Mesh(geometry, material);
+  
 }
+
 
 /**
  * Creates a pyramid mesh with random size and color.
@@ -116,27 +204,35 @@ function createCube() {
 function createPyramid() {
   const pyramidSize = Math.random() * 0.4 + 0.1;
   const geometry = new TetrahedronGeometry(pyramidSize, 0);
-  const material = new MeshStandardMaterial({ vertexColors: true });
-  const colors = [];
 
-  for (let i = 0; i < 6; i++) {
-    const color = new Color();
-    color.setRGB(Math.random(), Math.random(), Math.random());
+  const pyramidHasTexture = Math.random() < 0.5 ? true : false;
+  
+  if (!pyramidHasTexture) {
 
-    // Assign the same color to all vertices of the current face
-    for (let j = 0; j < 4; j++) {
-      colors.push(color.r, color.g, color.b);
+    let material = new MeshStandardMaterial({ vertexColors: true });
+    const colors = [];
+
+    for (let i = 0; i < 6; i++) {
+      const color = new Color();
+      color.setRGB(Math.random(), Math.random(), Math.random());
+  
+      // Assign the same color to all vertices of the current face
+      for (let j = 0; j < 3; j++) {
+        colors.push(color.r, color.g, color.b);
+      }
     }
-  }
+    geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
+    return new Mesh(geometry, material);
 
-  geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
-  return new Mesh(geometry, material);
+  } else {
+
+    const textureLoader = new TextureLoader().load('./textures/lavatile.png');
+    let material = new MeshStandardMaterial({ map: textureLoader});
+    return new Mesh(geometry, material);
+  }
+  
 }
 
-const objectsCount = Math.floor(Math.random() * 26) + 5;
-console.log(objectsCount);
-
-const meshes = [];
 
 async function createObj() {
   const randomX = Math.random() * 20 - 10;
@@ -172,54 +268,6 @@ async function createObj() {
   }
 }
 
-
-/**
- * Creates a specified number of random objects and adds them to the scene.
- */
-async function createRandomObjects() {
-  
-  for (let i = 0; i < objectsCount; i++) {
-    const randomX = Math.random() * 20 - 10;
-    const randomY = Math.random() * 2 - 1;
-    const randomZ = Math.random() * 20 - 10;
-  
-    let randomShape;
-    if (Math.random() < 0.3) {
-      createObj();
-    } else {
-      randomShape = Math.random() < 0.5 ? createCube() : createPyramid();
-      randomShape.position.set(randomX, randomY, randomZ);
-      scene.add(randomShape);
-      meshes.push(randomShape);
-    }
-  
-  }
-  
-}
-
-createRandomObjects();
-
-const gridHelper = new GridHelper(200, 50);
-scene.add(gridHelper);
-
-const lightTypeSelect = document.getElementById('lightTypeSelect');
-const lightPosXInput = document.getElementById('lightPosXInput');
-const lightPosYInput = document.getElementById('lightPosYInput');
-const lightPosZInput = document.getElementById('lightPosZInput');
-const colorRInput = document.getElementById('colorRInput');
-const colorGInput = document.getElementById('colorGInput');
-const colorBInput = document.getElementById('colorBInput');
-
-let light;
-let lightHelper;
-
-lightTypeSelect.addEventListener('change', updateLightType);
-lightPosXInput.addEventListener('input', updateLightPosition);
-lightPosYInput.addEventListener('input', updateLightPosition);
-lightPosZInput.addEventListener('input', updateLightPosition);
-colorRInput.addEventListener('input', updateLightColor);
-colorGInput.addEventListener('input', updateLightColor);
-colorBInput.addEventListener('input', updateLightColor);
 
 /**
  * Updates the light type based on the selected option and updates its position and color.
@@ -259,6 +307,7 @@ function updateLightType() {
   scene.add(light, lightHelper);
 }
 
+
 /**
  * Updates the light position based on the input field values.
  */
@@ -272,6 +321,7 @@ function updateLightPosition() {
   }
 }
 
+
 /**
  * Updates the light color based on the input field values.
  */
@@ -283,6 +333,7 @@ function updateLightColor() {
   const color = new Color(r, g, b);
   light.color = color;
 }
+
 
 /**
  * Animates the random rotation of the meshes.
@@ -306,7 +357,6 @@ function animateRandomRotation() {
   }
 }
 
-const animateFunctions = [];
 
 /**
  * The animation loop.
@@ -322,6 +372,3 @@ function animate() {
 
   renderer.render(scene, camera);
 }
-
-animateRandomRotation();
-animate();
