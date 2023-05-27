@@ -77,6 +77,8 @@ To get the corresponding documentation on the project you can either run the Git
 ```bash
 #   Inside the root directory of the project
 $ jsdoc .\src\js\app.js
+#  OR
+$ npx jsdoc -c jsdoc.config.json
 ```
 
 ## Features
