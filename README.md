@@ -72,6 +72,12 @@ Inside the browser it will be given some instructions on how to use the project.
 #   Inside the root directory of the project
 $ vite src
 ```
+To get the corresponding documentation on the project you can either run the Github Actions or run the command locally.
+
+```bash
+#   Inside the root directory of the project
+$ jsdoc .\src\js\app.js
+```
 
 ## Features
 

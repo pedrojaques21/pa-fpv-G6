@@ -57,7 +57,7 @@ document.addEventListener("keyup", handleKeyUp);
 // Object creation
 const objectsCount = Math.floor(Math.random() * 26) + 5;
 const meshes = [];
-const test = [];
+const meshObj = [];
 createRandomObjects();
 
 // Light setup
@@ -299,6 +299,10 @@ function createPyramid() {
   }
 }
 
+/**
+ * Generates random model and texture paths for a 3D object.
+ * @returns {Array<string>} An array containing the model path and the texture path.
+ */
 function randomObj() {
   const randomNumber = Math.floor(Math.random() * 5) + 1;
   let modelPath;
@@ -335,6 +339,12 @@ function randomObj() {
   return [modelPath, modelTexturePath];
 }
 
+
+/**
+ * Asynchronously creates a 3D object from an OBJ file and applies a texture to it.
+ * @returns {Promise<THREE.Object3D>} A promise that resolves with the loaded object if successful.
+ * @throws {Error} If the model fails to load.
+ */
 async function createObj() {
   const loader = new OBJLoader();
   const [modelPath, modelTexturePath] = randomObj();
@@ -344,6 +354,12 @@ async function createObj() {
 
   try {
     const object = await new Promise((resolve, reject) => {
+      /**
+       * Loads the OBJ model.
+       * @param {string} modelPath - The path to the OBJ model file.
+       * @param {Function} resolve - The function to call when the model is successfully loaded.
+       * @param {Function} reject - The function to call if there's an error loading the model.
+       */
       loader.load(modelPath, resolve, undefined, reject);
     });
 
@@ -365,12 +381,14 @@ async function createObj() {
       const size = 0.004;
       object.scale.set(size, size, size);
     }
+    
     return object;
   } catch (error) {
     console.error(`Failed to load model at '${modelPath}':`, error);
     throw error;
   }
 }
+
 
 /**
  * Creates a specified number of random objects and adds them to the scene.
@@ -388,7 +406,7 @@ async function createRandomObjects() {
       randomObj.then((myObj) => {
         myObj.position.set(randomX, randomY, randomZ);
         scene.add(myObj);
-        test.push(myObj);
+        meshObj.push(myObj);
         animateRandomRotationObj();
       });
     } else {
@@ -489,7 +507,7 @@ function animateRandomRotation() {
  * Animates the random rotation of the 3d Objects.
  */
 function animateRandomRotationObj() {
-  for (const mesh of test) {
+  for (const mesh of meshObj) {
     const randomSpeedX = (Math.random() - 0.5) * 0.1;
     const randomSpeedY = (Math.random() - 0.5) * 0.1;
     const randomSpeedZ = (Math.random() - 0.5) * 0.1;
