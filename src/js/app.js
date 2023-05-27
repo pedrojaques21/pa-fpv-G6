@@ -1,5 +1,5 @@
 import { Scene, PerspectiveCamera, WebGLRenderer, BoxGeometry, TetrahedronGeometry, MeshBasicMaterial,
-  MeshStandardMaterial, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper,
+  MeshStandardMaterial, DoubleSide, FrontSide, BackSide, Color, Mesh, Float32BufferAttribute, GridHelper, AmbientLight, PointLight, PointLightHelper,
    DirectionalLight, DirectionalLightHelper, SpotLight, SpotLightHelper, Clock, TextureLoader, AxesHelper
   } from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
@@ -11,7 +11,6 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
  * Initializes the scene, camera, renderer, controls, clock, and event listeners.
  */
 const { scene, camera, renderer, controls } = setupScene();
-const clock = new Clock();
 
 // Start button
 const startButton = document.getElementById('startButton');
@@ -32,6 +31,11 @@ scene.add(gridHelper);
 const objectsCount = Math.floor(Math.random() * 26) + 5;
 console.log(objectsCount);
 const meshes = [];
+const bricks = './textures/brick_roughness.jpg';
+const lava = './textures/lavatile.jpg';
+const negy = './textures/negy.jpg';
+const disturb = './textures/disturb.jpg';
+const floor = './textures/FloorsCheckerboard_S_Diffuse.jpg';
 createRandomObjects();
 
 // Light controls setup
@@ -57,13 +61,13 @@ colorGInput.addEventListener('input', updateLightColor);
 colorBInput.addEventListener('input', updateLightColor);
 
 // animation
+const clock = new Clock();
 
 const animateFunctions = [];
 
 animateRandomRotation();
 
 animate();
-
 
 
 //***********************************************************
@@ -164,7 +168,7 @@ async function createRandomObjects() {
 
 
 /**
- * Creates a cube mesh with random size and color.
+ * Creates a cube mesh with random size and color or texture.
  * @returns {Mesh} The created cube mesh.
  */
 function createCube() {
@@ -191,17 +195,19 @@ function createCube() {
     return coloredCube;
 
   } else {
-    //'./textures/negy.jpg'
-    //'./textures/disturb.jpg'
-    //'./textures/brick_roughness.jpg'
-
-
-    const textureLoader = new TextureLoader().load('./textures/disturb.jpg');
-    let material = new MeshStandardMaterial({ map: textureLoader});
+    // Textured cubes
+    const textureLoader = new TextureLoader()
+    let material = [
+      new MeshStandardMaterial({ map: textureLoader.load(bricks), side: DoubleSide}),   //right
+      new MeshStandardMaterial({ map: textureLoader.load(bricks), side: DoubleSide}),   //left
+      new MeshStandardMaterial({ map: textureLoader.load(bricks), side: DoubleSide}),   //top
+      new MeshStandardMaterial({ map: textureLoader.load(floor), side: DoubleSide}),    //bottom
+      new MeshStandardMaterial({ map: textureLoader.load(negy), side: BackSide}),       //front
+      new MeshStandardMaterial({ map: textureLoader.load(disturb), side: DoubleSide}),  //back
+    ];
     const texturedCube = new Mesh(geometry, material);
     return texturedCube;
   }
-  
 }
 
 
